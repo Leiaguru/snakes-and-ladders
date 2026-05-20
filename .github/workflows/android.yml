@@ -17,3 +17,5 @@ jobs:
         with:
           name: package
           path: ./.buildozer/android/app/build/outputs/apk/debug/*.apk
+
+
