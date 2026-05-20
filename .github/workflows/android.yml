@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build APK with Buildozer Container
-        uses: ArtemSBulgakov/buildozer-action@v2
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
           buildozer_version: stable
           repository: kivy/buildozer
