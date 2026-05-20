@@ -7,38 +7,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Build APK with Buildozer Container
+        uses: ArtemSBulgakov/buildozer-action@v2
         with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev gettext
-
-      - name: Install Buildozer and Cython inside Virtual Env
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install buildozer cython==0.29.33
-
-      - name: Build APK with Buildozer
-        run: |
-          source venv/bin/activate
-          yes | buildozer -v android debug
-        env:
-          ACCEPT_FDL: y
+          buildozer_version: stable
+          repository: kivy/buildozer
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Jungle_Snakes_Android_App
-          path: bin/*.apk
+          path: ./.buildozer/android/app/build/outputs/apk/debug/*.apk
