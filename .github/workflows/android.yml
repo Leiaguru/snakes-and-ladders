@@ -3,18 +3,40 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Explicitly lock this to 22.04 to guarantee libtinfo5 and Java paths work flawlessly
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build APK with Buildozer Container
-        uses: ArtemSBulgakov/buildozer-action@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          buildozer_version: stable
-          repository: kivy/buildozer
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev gettext
+
+      - name: Install Buildozer and Cython
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33
+
+      - name: Build APK with Buildozer
+        run: |
+          yes | buildozer -v android debug
+        env:
+          ACCEPT_FDL: y
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Jungle_Snakes_Android_App
-          path: ./.buildozer/android/app/build/outputs/apk/debug/*.apk
+          path: bin/*.apk
